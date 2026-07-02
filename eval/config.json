@@ -1,0 +1,14 @@
+{
+  "k": 3,
+  "note": "CI gate targets. run_all.py exits non-zero if any numeric gate is missed. Scores are on the 0..1 scale; thresholds themselves live in app/config.py and are read live by the harness.",
+  "gates": {
+    "layer1_recall_at_k": 0.90,
+    "layer1_top1": 0.85,
+    "layer2_display_precision": 0.90,
+    "layer2_out_of_kb_rejection": 0.80,
+    "layer3_clarification_trigger": 0.70,
+    "layer3_resolved_after_followup": 0.70,
+    "layer4_end_to_end_top1": 0.85,
+    "layer4_out_of_kb_correct": 0.80
+  }
+}

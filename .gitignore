@@ -1,0 +1,15 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.env
+nltk_data/
+antenv/
+pythonenv*/
+# Word lock/temp files
+~$*
+# local trace output (only written at runtime)
+logs/
+app/logs/

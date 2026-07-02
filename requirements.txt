@@ -1,0 +1,11 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.7.4
+psycopg2-binary==2.9.12
+nltk==3.9.1
+# azure-identity / azure-keyvault-secrets are needed ONLY for the Key Vault
+# secret path (config.py imports them lazily). This deployment reads PG_CONN /
+# TEVA_AI_KEY from app settings, so they are omitted to keep the Oryx build lean.
+# Add them back when switching to managed-identity + Key Vault references:
+#   azure-identity==1.19.0
+#   azure-keyvault-secrets==4.9.0

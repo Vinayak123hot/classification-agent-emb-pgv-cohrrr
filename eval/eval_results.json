@@ -1,0 +1,847 @@
+{
+  "generated": "2026-07-01T23:04:41",
+  "gold_version": "2.0-pgvector",
+  "total_cases": 59,
+  "thresholds": {
+    "CONFIDENT_SCORE": 0.6,
+    "MIN_DISPLAY_SCORE": 0.55,
+    "FOLLOWUP_FLOOR": 0.15,
+    "SPREAD_THRESHOLD": 0.08,
+    "MIN_FIELD_SCORE": 0.35,
+    "MAX_ROUNDS": 5,
+    "RERANK_K": 10
+  },
+  "metrics": {
+    "1": {
+      "k": 3,
+      "recall_at_k": 95.7,
+      "top1": 91.5,
+      "mrr": 0.942,
+      "cases": 47
+    },
+    "2": {
+      "display_precision": 100.0,
+      "display_recall": 84.8,
+      "out_of_kb_rejection": 100.0,
+      "confident_score_in_use": 0.6,
+      "resolved_turn1": 31,
+      "false_resolves": 0
+    },
+    "3": {
+      "clarification_trigger": 78.6,
+      "grounded_rate": 81.8,
+      "resolved_after_followup": 71.4,
+      "cases": 14
+    },
+    "4": {
+      "end_to_end_top1": 97.9,
+      "out_of_kb_correct": 91.7,
+      "avg_rounds": 2.49,
+      "in_kb_cases": 47,
+      "out_of_kb_cases": 12
+    }
+  },
+  "gate": [
+    {
+      "check": "layer1_recall_at_k",
+      "target": 0.9,
+      "actual": 95.7,
+      "status": "PASS"
+    },
+    {
+      "check": "layer1_top1",
+      "target": 0.85,
+      "actual": 91.5,
+      "status": "PASS"
+    },
+    {
+      "check": "layer2_display_precision",
+      "target": 0.9,
+      "actual": 100.0,
+      "status": "PASS"
+    },
+    {
+      "check": "layer2_out_of_kb_rejection",
+      "target": 0.8,
+      "actual": 100.0,
+      "status": "PASS"
+    },
+    {
+      "check": "layer3_clarification_trigger",
+      "target": 0.7,
+      "actual": 78.6,
+      "status": "PASS"
+    },
+    {
+      "check": "layer3_resolved_after_followup",
+      "target": 0.7,
+      "actual": 71.4,
+      "status": "PASS"
+    },
+    {
+      "check": "layer4_end_to_end_top1",
+      "target": 0.85,
+      "actual": 97.9,
+      "status": "PASS"
+    },
+    {
+      "check": "layer4_out_of_kb_correct",
+      "target": 0.8,
+      "actual": 91.7,
+      "status": "PASS"
+    }
+  ],
+  "details": {
+    "1": {
+      "per_doc_top1": {
+        "KB0010265": 87.5,
+        "KB0010863": 100.0,
+        "KB0010865": 100.0,
+        "KB0013608": 83.3,
+        "KB0015622": 100.0,
+        "KB0015711": 100.0,
+        "KB0016162": 100.0,
+        "KB0016493": 66.7
+      },
+      "confusions": [
+        {
+          "id": "weak-3",
+          "query": "outlook is acting up this morning",
+          "expected": "KB0013608",
+          "got_top3": [
+            "KB0010265",
+            "KB0013608",
+            "KB0015711"
+          ]
+        },
+        {
+          "id": "weak-8",
+          "query": "i cant send or receive email",
+          "expected": "KB0016493",
+          "got_top3": [
+            "KB0013608",
+            "KB0016162",
+            "KB0015711"
+          ]
+        },
+        {
+          "id": "ambig-2",
+          "query": "outlook wont open properly",
+          "expected": "KB0010265",
+          "got_top3": [
+            "KB0013608",
+            "KB0010265",
+            "KB0015622"
+          ]
+        },
+        {
+          "id": "ambig-4",
+          "query": "i cant send my emails",
+          "expected": "KB0016493",
+          "got_top3": [
+            "KB0015711",
+            "KB0013608",
+            "KB0016162"
+          ]
+        }
+      ]
+    },
+    "2": {
+      "threshold_sweep": [
+        {
+          "confident_score": 0.4,
+          "correct_resolves": 34,
+          "false_resolves": 3
+        },
+        {
+          "confident_score": 0.45,
+          "correct_resolves": 34,
+          "false_resolves": 0
+        },
+        {
+          "confident_score": 0.5,
+          "correct_resolves": 34,
+          "false_resolves": 0
+        },
+        {
+          "confident_score": 0.55,
+          "correct_resolves": 33,
+          "false_resolves": 0
+        },
+        {
+          "confident_score": 0.6,
+          "correct_resolves": 31,
+          "false_resolves": 0
+        },
+        {
+          "confident_score": 0.65,
+          "correct_resolves": 31,
+          "false_resolves": 0
+        },
+        {
+          "confident_score": 0.7,
+          "correct_resolves": 26,
+          "false_resolves": 0
+        },
+        {
+          "confident_score": 0.75,
+          "correct_resolves": 21,
+          "false_resolves": 0
+        },
+        {
+          "confident_score": 0.8,
+          "correct_resolves": 12,
+          "false_resolves": 0
+        },
+        {
+          "confident_score": 0.85,
+          "correct_resolves": 6,
+          "false_resolves": 0
+        }
+      ]
+    },
+    "3": {
+      "cases": [
+        {
+          "id": "weak-1",
+          "tier": "weak",
+          "turn1_asked": true,
+          "turn1_grounded": false,
+          "turn1_phrases": [],
+          "turn2_kb": "KB0010265",
+          "expected": "KB0010265",
+          "turn2_resolved_correct": true
+        },
+        {
+          "id": "weak-2",
+          "tier": "weak",
+          "turn1_asked": false,
+          "turn1_grounded": false,
+          "turn1_phrases": [],
+          "turn2_kb": "KB0010865",
+          "expected": "KB0010865",
+          "turn2_resolved_correct": true
+        },
+        {
+          "id": "weak-3",
+          "tier": "weak",
+          "turn1_asked": true,
+          "turn1_grounded": true,
+          "turn1_phrases": [
+            "I tried to open the outlook application, but the loading screen is stuck until getting an error message",
+            "The Outlook's processes are stuck, or the OST file (Outlook's local database) is corrupted."
+          ],
+          "turn2_kb": null,
+          "expected": "KB0013608",
+          "turn2_resolved_correct": false
+        },
+        {
+          "id": "weak-4",
+          "tier": "weak",
+          "turn1_asked": true,
+          "turn1_grounded": true,
+          "turn1_phrases": [
+            "E-mail stays in the Outbox folder until a Send/Receive operation is manually triggered initiated In outlook.",
+            "The  problem can occur if the \"Send immediately when connected\" option is not enabled."
+          ],
+          "turn2_kb": "KB0015711",
+          "expected": "KB0015711",
+          "turn2_resolved_correct": true
+        },
+        {
+          "id": "weak-5",
+          "tier": "weak",
+          "turn1_asked": true,
+          "turn1_grounded": true,
+          "turn1_phrases": [
+            "Meetings are going to Calendar and not receiving notification."
+          ],
+          "turn2_kb": "KB0016162",
+          "expected": "KB0016162",
+          "turn2_resolved_correct": true
+        },
+        {
+          "id": "weak-6",
+          "tier": "weak",
+          "turn1_asked": false,
+          "turn1_grounded": false,
+          "turn1_phrases": [],
+          "turn2_kb": "KB0015622",
+          "expected": "KB0015622",
+          "turn2_resolved_correct": true
+        },
+        {
+          "id": "weak-7",
+          "tier": "weak",
+          "turn1_asked": true,
+          "turn1_grounded": true,
+          "turn1_phrases": [
+            "How do I rebuild an OST profile in Outlook?"
+          ],
+          "turn2_kb": "KB0010863",
+          "expected": "KB0010863",
+          "turn2_resolved_correct": true
+        },
+        {
+          "id": "weak-8",
+          "tier": "weak",
+          "turn1_asked": true,
+          "turn1_grounded": true,
+          "turn1_phrases": [
+            "Meetings are going to Calendar and not receiving notification.",
+            "The  problem can occur if the \"Send immediately when connected\" option is not enabled.",
+            "Can't Open Microsoft Outlook"
+          ],
+          "turn2_kb": null,
+          "expected": "KB0016493",
+          "turn2_resolved_correct": false
+        },
+        {
+          "id": "ambig-1",
+          "tier": "ambiguous",
+          "turn1_asked": false,
+          "turn1_grounded": false,
+          "turn1_phrases": [],
+          "turn2_kb": "KB0010265",
+          "expected": "KB0013608",
+          "turn2_resolved_correct": false
+        },
+        {
+          "id": "ambig-2",
+          "tier": "ambiguous",
+          "turn1_asked": true,
+          "turn1_grounded": true,
+          "turn1_phrases": [
+            "Can't Open Microsoft Outlook"
+          ],
+          "turn2_kb": "KB0010265",
+          "expected": "KB0010265",
+          "turn2_resolved_correct": true
+        },
+        {
+          "id": "ambig-3",
+          "tier": "ambiguous",
+          "turn1_asked": true,
+          "turn1_grounded": true,
+          "turn1_phrases": [
+            "User reports Microsoft Outlook crashes after clicking on the Calendar tab."
+          ],
+          "turn2_kb": "KB0015622",
+          "expected": "KB0015622",
+          "turn2_resolved_correct": true
+        },
+        {
+          "id": "ambig-4",
+          "tier": "ambiguous",
+          "turn1_asked": true,
+          "turn1_grounded": true,
+          "turn1_phrases": [
+            "The  problem can occur if the \"Send immediately when connected\" option is not enabled."
+          ],
+          "turn2_kb": null,
+          "expected": "KB0016493",
+          "turn2_resolved_correct": false
+        },
+        {
+          "id": "ambig-5",
+          "tier": "ambiguous",
+          "turn1_asked": true,
+          "turn1_grounded": true,
+          "turn1_phrases": [
+            "E-mail stays in the Outbox folder until a Send/Receive operation is manually triggered initiated In outlook.",
+            "The  problem can occur if the \"Send immediately when connected\" option is not enabled."
+          ],
+          "turn2_kb": "KB0015711",
+          "expected": "KB0015711",
+          "turn2_resolved_correct": true
+        },
+        {
+          "id": "ambig-6",
+          "tier": "ambiguous",
+          "turn1_asked": true,
+          "turn1_grounded": false,
+          "turn1_phrases": [],
+          "turn2_kb": "KB0010265",
+          "expected": "KB0010265",
+          "turn2_resolved_correct": true
+        }
+      ]
+    },
+    "4": {
+      "cases": [
+        {
+          "id": "KB0010265-s1",
+          "tier": "strong",
+          "expected": "KB0010265",
+          "final_kb": "KB0010265",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0010265-s2",
+          "tier": "strong",
+          "expected": "KB0010265",
+          "final_kb": "KB0010265",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0010265-s3",
+          "tier": "strong",
+          "expected": "KB0010265",
+          "final_kb": "KB0010265",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0010265-s4",
+          "tier": "strong",
+          "expected": "KB0010265",
+          "final_kb": "KB0010265",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0010265-s5",
+          "tier": "strong",
+          "expected": "KB0010265",
+          "final_kb": "KB0010265",
+          "rounds": 5,
+          "ok": true
+        },
+        {
+          "id": "KB0010863-s1",
+          "tier": "strong",
+          "expected": "KB0010863",
+          "final_kb": "KB0010863",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0010863-s2",
+          "tier": "strong",
+          "expected": "KB0010863",
+          "final_kb": "KB0010863",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0010863-s3",
+          "tier": "strong",
+          "expected": "KB0010863",
+          "final_kb": "KB0010863",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0010863-s4",
+          "tier": "strong",
+          "expected": "KB0010863",
+          "final_kb": "KB0010863",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0010865-s1",
+          "tier": "strong",
+          "expected": "KB0010865",
+          "final_kb": "KB0010865",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0010865-s2",
+          "tier": "strong",
+          "expected": "KB0010865",
+          "final_kb": "KB0010865",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0010865-s3",
+          "tier": "strong",
+          "expected": "KB0010865",
+          "final_kb": "KB0010865",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0010865-s4",
+          "tier": "strong",
+          "expected": "KB0010865",
+          "final_kb": "KB0010865",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0013608-s1",
+          "tier": "strong",
+          "expected": "KB0013608",
+          "final_kb": "KB0013608",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0013608-s2",
+          "tier": "strong",
+          "expected": "KB0013608",
+          "final_kb": "KB0013608",
+          "rounds": 5,
+          "ok": true
+        },
+        {
+          "id": "KB0013608-s3",
+          "tier": "strong",
+          "expected": "KB0013608",
+          "final_kb": "KB0013608",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0013608-s4",
+          "tier": "strong",
+          "expected": "KB0013608",
+          "final_kb": "KB0013608",
+          "rounds": 5,
+          "ok": true
+        },
+        {
+          "id": "KB0015622-s1",
+          "tier": "strong",
+          "expected": "KB0015622",
+          "final_kb": "KB0015622",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0015622-s2",
+          "tier": "strong",
+          "expected": "KB0015622",
+          "final_kb": "KB0015622",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0015622-s3",
+          "tier": "strong",
+          "expected": "KB0015622",
+          "final_kb": "KB0015622",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0015622-s4",
+          "tier": "strong",
+          "expected": "KB0015622",
+          "final_kb": "KB0015622",
+          "rounds": 5,
+          "ok": true
+        },
+        {
+          "id": "KB0015711-s1",
+          "tier": "strong",
+          "expected": "KB0015711",
+          "final_kb": "KB0015711",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0015711-s2",
+          "tier": "strong",
+          "expected": "KB0015711",
+          "final_kb": "KB0015711",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0015711-s3",
+          "tier": "strong",
+          "expected": "KB0015711",
+          "final_kb": "KB0015711",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0015711-s4",
+          "tier": "strong",
+          "expected": "KB0015711",
+          "final_kb": "KB0015711",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0016162-s1",
+          "tier": "strong",
+          "expected": "KB0016162",
+          "final_kb": "KB0016162",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0016162-s2",
+          "tier": "strong",
+          "expected": "KB0016162",
+          "final_kb": "KB0016162",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0016162-s3",
+          "tier": "strong",
+          "expected": "KB0016162",
+          "final_kb": "KB0016162",
+          "rounds": 5,
+          "ok": true
+        },
+        {
+          "id": "KB0016162-s4",
+          "tier": "strong",
+          "expected": "KB0016162",
+          "final_kb": "KB0016162",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0016493-s1",
+          "tier": "strong",
+          "expected": "KB0016493",
+          "final_kb": "KB0016493",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0016493-s2",
+          "tier": "strong",
+          "expected": "KB0016493",
+          "final_kb": "KB0016493",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0016493-s3",
+          "tier": "strong",
+          "expected": "KB0016493",
+          "final_kb": "KB0016493",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "KB0016493-s4",
+          "tier": "strong",
+          "expected": "KB0016493",
+          "final_kb": "KB0016493",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "weak-1",
+          "tier": "weak",
+          "expected": "KB0010265",
+          "final_kb": "KB0010265",
+          "rounds": 2,
+          "ok": true
+        },
+        {
+          "id": "weak-2",
+          "tier": "weak",
+          "expected": "KB0010865",
+          "final_kb": "KB0010865",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "weak-3",
+          "tier": "weak",
+          "expected": "KB0013608",
+          "final_kb": "KB0013608",
+          "rounds": 5,
+          "ok": true
+        },
+        {
+          "id": "weak-4",
+          "tier": "weak",
+          "expected": "KB0015711",
+          "final_kb": "KB0015711",
+          "rounds": 2,
+          "ok": true
+        },
+        {
+          "id": "weak-5",
+          "tier": "weak",
+          "expected": "KB0016162",
+          "final_kb": "KB0016162",
+          "rounds": 2,
+          "ok": true
+        },
+        {
+          "id": "weak-6",
+          "tier": "weak",
+          "expected": "KB0015622",
+          "final_kb": "KB0015622",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "weak-7",
+          "tier": "weak",
+          "expected": "KB0010863",
+          "final_kb": "KB0010863",
+          "rounds": 2,
+          "ok": true
+        },
+        {
+          "id": "weak-8",
+          "tier": "weak",
+          "expected": "KB0016493",
+          "final_kb": null,
+          "rounds": 5,
+          "ok": false
+        },
+        {
+          "id": "ambig-1",
+          "tier": "ambiguous",
+          "expected": "KB0013608",
+          "final_kb": "KB0013608",
+          "rounds": 1,
+          "ok": true
+        },
+        {
+          "id": "ambig-2",
+          "tier": "ambiguous",
+          "expected": "KB0010265",
+          "final_kb": "KB0010265",
+          "rounds": 2,
+          "ok": true
+        },
+        {
+          "id": "ambig-3",
+          "tier": "ambiguous",
+          "expected": "KB0015622",
+          "final_kb": "KB0015622",
+          "rounds": 2,
+          "ok": true
+        },
+        {
+          "id": "ambig-4",
+          "tier": "ambiguous",
+          "expected": "KB0016493",
+          "final_kb": "KB0016493",
+          "rounds": 5,
+          "ok": true
+        },
+        {
+          "id": "ambig-5",
+          "tier": "ambiguous",
+          "expected": "KB0015711",
+          "final_kb": "KB0015711",
+          "rounds": 2,
+          "ok": true
+        },
+        {
+          "id": "ambig-6",
+          "tier": "ambiguous",
+          "expected": "KB0010265",
+          "final_kb": "KB0010265",
+          "rounds": 2,
+          "ok": true
+        },
+        {
+          "id": "ook-1",
+          "tier": "out_of_kb",
+          "expected": null,
+          "final_kb": null,
+          "rounds": 5,
+          "ok": true
+        },
+        {
+          "id": "ook-2",
+          "tier": "out_of_kb",
+          "expected": null,
+          "final_kb": null,
+          "rounds": 5,
+          "ok": true
+        },
+        {
+          "id": "ook-3",
+          "tier": "out_of_kb",
+          "expected": null,
+          "final_kb": null,
+          "rounds": 5,
+          "ok": true
+        },
+        {
+          "id": "ook-4",
+          "tier": "out_of_kb",
+          "expected": null,
+          "final_kb": null,
+          "rounds": 5,
+          "ok": true
+        },
+        {
+          "id": "ook-5",
+          "tier": "out_of_kb",
+          "expected": null,
+          "final_kb": null,
+          "rounds": 5,
+          "ok": true
+        },
+        {
+          "id": "ook-6",
+          "tier": "out_of_kb",
+          "expected": null,
+          "final_kb": null,
+          "rounds": 5,
+          "ok": true
+        },
+        {
+          "id": "ook-7",
+          "tier": "out_of_kb",
+          "expected": null,
+          "final_kb": null,
+          "rounds": 5,
+          "ok": true
+        },
+        {
+          "id": "ook-8",
+          "tier": "out_of_kb",
+          "expected": null,
+          "final_kb": "KB0010265",
+          "rounds": 5,
+          "ok": false
+        },
+        {
+          "id": "ook-9",
+          "tier": "out_of_kb",
+          "expected": null,
+          "final_kb": null,
+          "rounds": 5,
+          "ok": true
+        },
+        {
+          "id": "ook-10",
+          "tier": "out_of_kb",
+          "expected": null,
+          "final_kb": null,
+          "rounds": 5,
+          "ok": true
+        },
+        {
+          "id": "ook-11",
+          "tier": "out_of_kb",
+          "expected": null,
+          "final_kb": null,
+          "rounds": 5,
+          "ok": true
+        },
+        {
+          "id": "ook-12",
+          "tier": "out_of_kb",
+          "expected": null,
+          "final_kb": null,
+          "rounds": 5,
+          "ok": true
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "version": "2.0-pgvector",
+  "note": "Gold set for the pgvector service. Queries are grounded ONLY in each KB doc's title / user-experience / cause (production docs have NO 'Symptoms' field). Tiers: strong (should resolve on turn 1), weak (under-specified -> needs 1 follow-up), ambiguous (confusable between 2 KBs -> needs 1 follow-up), out_of_kb (valid-Outlook-but-uncovered or off-topic -> must never resolve to a KB). 'followup' is the extra detail a user gives when asked, used by the end-to-end layers to simulate round 2 deterministically (no LLM needed).",
+  "cases": [
+    {"id": "KB0010265-s1", "query": "outlook is stuck on the loading screen", "expected_kb": "KB0010265", "tier": "strong", "intent": "ISSUE"},
+    {"id": "KB0010265-s2", "query": "outlook hangs on the loading screen and then shows an error message", "expected_kb": "KB0010265", "tier": "strong", "intent": "ISSUE"},
+    {"id": "KB0010265-s3", "query": "the outlook loading screen freezes and never finishes opening", "expected_kb": "KB0010265", "tier": "strong", "intent": "ISSUE"},
+    {"id": "KB0010265-s4", "query": "outlook gets stuck loading my profile with an error", "expected_kb": "KB0010265", "tier": "strong", "intent": "ISSUE"},
+    {"id": "KB0010265-s5", "query": "my ost file seems corrupted and outlook wont finish loading", "expected_kb": "KB0010265", "tier": "strong", "intent": "ISSUE"},
+
+    {"id": "KB0010863-s1", "query": "how do i rebuild my outlook profile", "expected_kb": "KB0010863", "tier": "strong", "intent": "HOWTO"},
+    {"id": "KB0010863-s2", "query": "steps to recreate the ost profile in outlook", "expected_kb": "KB0010863", "tier": "strong", "intent": "HOWTO"},
+    {"id": "KB0010863-s3", "query": "i need to rebuild the user profile in outlook", "expected_kb": "KB0010863", "tier": "strong", "intent": "HOWTO"},
+    {"id": "KB0010863-s4", "query": "how to recreate my outlook mail profile from scratch", "expected_kb": "KB0010863", "tier": "strong", "intent": "HOWTO"},
+
+    {"id": "KB0010865-s1", "query": "my report phishing add-in was automatically disabled in outlook", "expected_kb": "KB0010865", "tier": "strong", "intent": "ISSUE"},
+    {"id": "KB0010865-s2", "query": "how do i re-enable an auto disabled add-in in outlook", "expected_kb": "KB0010865", "tier": "strong", "intent": "HOWTO"},
+    {"id": "KB0010865-s3", "query": "outlook disabled my security add-in on its own", "expected_kb": "KB0010865", "tier": "strong", "intent": "ISSUE"},
+    {"id": "KB0010865-s4", "query": "the phishing add-in keeps getting turned off automatically", "expected_kb": "KB0010865", "tier": "strong", "intent": "ISSUE"},
+
+    {"id": "KB0013608-s1", "query": "i cannot open microsoft outlook at all", "expected_kb": "KB0013608", "tier": "strong", "intent": "ISSUE"},
+    {"id": "KB0013608-s2", "query": "outlook does not launch when i click the icon", "expected_kb": "KB0013608", "tier": "strong", "intent": "ISSUE"},
+    {"id": "KB0013608-s3", "query": "microsoft outlook wont start, nothing happens", "expected_kb": "KB0013608", "tier": "strong", "intent": "ISSUE"},
+    {"id": "KB0013608-s4", "query": "outlook fails to open completely", "expected_kb": "KB0013608", "tier": "strong", "intent": "ISSUE"},
+
+    {"id": "KB0015622-s1", "query": "outlook crashes when i click on the calendar tab", "expected_kb": "KB0015622", "tier": "strong", "intent": "ISSUE"},
+    {"id": "KB0015622-s2", "query": "clicking the calendar makes outlook crash and close", "expected_kb": "KB0015622", "tier": "strong", "intent": "ISSUE"},
+    {"id": "KB0015622-s3", "query": "outlook closes every time i open the calendar view", "expected_kb": "KB0015622", "tier": "strong", "intent": "ISSUE"},
+    {"id": "KB0015622-s4", "query": "the app crashes as soon as i switch to calendar", "expected_kb": "KB0015622", "tier": "strong", "intent": "ISSUE"},
+
+    {"id": "KB0015711-s1", "query": "my emails are stuck in the outbox and not sending", "expected_kb": "KB0015711", "tier": "strong", "intent": "ISSUE"},
+    {"id": "KB0015711-s2", "query": "outgoing mail stays in the outbox until i click send receive", "expected_kb": "KB0015711", "tier": "strong", "intent": "ISSUE"},
+    {"id": "KB0015711-s3", "query": "messages sit in the outbox and dont go out immediately", "expected_kb": "KB0015711", "tier": "strong", "intent": "ISSUE"},
+    {"id": "KB0015711-s4", "query": "email is not sent immediately, it waits in the outbox", "expected_kb": "KB0015711", "tier": "strong", "intent": "ISSUE"},
+
+    {"id": "KB0016162-s1", "query": "i am not receiving meeting notifications", "expected_kb": "KB0016162", "tier": "strong", "intent": "ISSUE"},
+    {"id": "KB0016162-s2", "query": "meetings go to my calendar but i get no notification", "expected_kb": "KB0016162", "tier": "strong", "intent": "ISSUE"},
+    {"id": "KB0016162-s3", "query": "no alerts or reminders for new meetings in outlook", "expected_kb": "KB0016162", "tier": "strong", "intent": "ISSUE"},
+    {"id": "KB0016162-s4", "query": "not getting notified when a meeting invite arrives", "expected_kb": "KB0016162", "tier": "strong", "intent": "ISSUE"},
+
+    {"id": "KB0016493-s1", "query": "how do i turn off work offline in outlook", "expected_kb": "KB0016493", "tier": "strong", "intent": "HOWTO"},
+    {"id": "KB0016493-s2", "query": "outlook is stuck in work offline mode, how to disable it", "expected_kb": "KB0016493", "tier": "strong", "intent": "HOWTO"},
+    {"id": "KB0016493-s3", "query": "how to switch off working offline in outlook 2016", "expected_kb": "KB0016493", "tier": "strong", "intent": "HOWTO"},
+    {"id": "KB0016493-s4", "query": "disable offline mode in outlook", "expected_kb": "KB0016493", "tier": "strong", "intent": "HOWTO"},
+
+    {"id": "weak-1", "query": "my outlook keeps freezing", "expected_kb": "KB0010265", "tier": "weak", "intent": "ISSUE", "followup": "it freezes on the loading screen and then shows an error"},
+    {"id": "weak-2", "query": "something is wrong with my outlook add-in", "expected_kb": "KB0010865", "tier": "weak", "intent": "ISSUE", "followup": "the report phishing add-in was disabled automatically"},
+    {"id": "weak-3", "query": "outlook is acting up this morning", "expected_kb": "KB0013608", "tier": "weak", "intent": "ISSUE", "followup": "it will not open at all when i click it, nothing happens"},
+    {"id": "weak-4", "query": "my emails are delayed", "expected_kb": "KB0015711", "tier": "weak", "intent": "ISSUE", "followup": "they stay in the outbox until i manually press send receive"},
+    {"id": "weak-5", "query": "i keep missing my meetings", "expected_kb": "KB0016162", "tier": "weak", "intent": "ISSUE", "followup": "i never get a notification when a meeting is scheduled"},
+    {"id": "weak-6", "query": "outlook has a problem with the calendar", "expected_kb": "KB0015622", "tier": "weak", "intent": "ISSUE", "followup": "it crashes whenever i click on the calendar tab"},
+    {"id": "weak-7", "query": "i have an outlook profile issue", "expected_kb": "KB0010863", "tier": "weak", "intent": "HOWTO", "followup": "i need to rebuild my ost profile"},
+    {"id": "weak-8", "query": "i cant send or receive email", "expected_kb": "KB0016493", "tier": "weak", "intent": "ISSUE", "followup": "it shows working offline at the bottom of the window"},
+
+    {"id": "ambig-1", "query": "outlook wont open", "expected_kb": "KB0013608", "tier": "ambiguous", "intent": "ISSUE", "followup": "nothing happens at all when i double click, it never even shows a loading screen"},
+    {"id": "ambig-2", "query": "outlook wont open properly", "expected_kb": "KB0010265", "tier": "ambiguous", "intent": "ISSUE", "followup": "it does show the loading screen but gets stuck there and errors out"},
+    {"id": "ambig-3", "query": "outlook keeps crashing", "expected_kb": "KB0015622", "tier": "ambiguous", "intent": "ISSUE", "followup": "it crashes specifically when i click the calendar tab"},
+    {"id": "ambig-4", "query": "i cant send my emails", "expected_kb": "KB0016493", "tier": "ambiguous", "intent": "ISSUE", "followup": "outlook shows working offline at the bottom"},
+    {"id": "ambig-5", "query": "my email is not going out", "expected_kb": "KB0015711", "tier": "ambiguous", "intent": "ISSUE", "followup": "the messages just stay in the outbox folder"},
+    {"id": "ambig-6", "query": "outlook is not responding", "expected_kb": "KB0010265", "tier": "ambiguous", "intent": "ISSUE", "followup": "it hangs on the loading screen with an error when starting"},
+
+    {"id": "ook-1", "query": "how do i change my email signature", "expected_kb": null, "tier": "out_of_kb", "intent": "HOWTO"},
+    {"id": "ook-2", "query": "how to set an out of office automatic reply", "expected_kb": null, "tier": "out_of_kb", "intent": "HOWTO"},
+    {"id": "ook-3", "query": "how do i recall an email i already sent", "expected_kb": null, "tier": "out_of_kb", "intent": "HOWTO"},
+    {"id": "ook-4", "query": "how to add a shared mailbox in outlook", "expected_kb": null, "tier": "out_of_kb", "intent": "HOWTO"},
+    {"id": "ook-5", "query": "how do i change my outlook password", "expected_kb": null, "tier": "out_of_kb", "intent": "HOWTO"},
+    {"id": "ook-6", "query": "how to create a rule to move emails into a folder", "expected_kb": null, "tier": "out_of_kb", "intent": "HOWTO"},
+    {"id": "ook-7", "query": "how do i increase the font size in outlook", "expected_kb": null, "tier": "out_of_kb", "intent": "HOWTO"},
+    {"id": "ook-8", "query": "outlook search is not returning any results", "expected_kb": null, "tier": "out_of_kb", "intent": "ISSUE"},
+    {"id": "ook-9", "query": "how do i write a vlookup formula in excel", "expected_kb": null, "tier": "out_of_kb", "intent": "OFFTOPIC"},
+    {"id": "ook-10", "query": "i need to reset my windows login password", "expected_kb": null, "tier": "out_of_kb", "intent": "OFFTOPIC"},
+    {"id": "ook-11", "query": "how to install a printer driver on my laptop", "expected_kb": null, "tier": "out_of_kb", "intent": "OFFTOPIC"},
+    {"id": "ook-12", "query": "how do i join a teams meeting", "expected_kb": null, "tier": "out_of_kb", "intent": "OFFTOPIC"}
+  ]
+}

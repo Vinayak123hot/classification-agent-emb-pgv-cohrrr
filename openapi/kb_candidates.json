@@ -1,0 +1,91 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "KB Candidates Tool (pgvector + Cohere rerank)",
+    "version": "2.0.0",
+    "description": "Azure-native replacement for the AI Search retrieval tool: text-embedding-3-small + pgvector hybrid (vector + Postgres full-text, RRF-fused) with Cohere Rerank v4 (cosine fallback). Same get_kb_candidates contract as before: returns a single best KB match when confident, otherwise asks the agent to gather one more detail. Scores are on a 0..1 scale."
+  },
+  "servers": [
+    { "url": "https://teva-kb-trace-no-ai-search.azurewebsites.net" }
+  ],
+  "paths": {
+    "/get_kb_candidates": {
+      "post": {
+        "operationId": "get_kb_candidates",
+        "summary": "Find the best-matching Outlook KB article for an issue or how-to",
+        "description": "Call this at the start of triage and again after every user follow-up answer, always passing the FULL cumulative description and the SAME session_id for the whole conversation (the session_id lets the tool cap follow-up rounds). Read the response fields in this order to decide what to do: (1) followup_required=true means ask ONE more question, then call again with an updated description — if discriminating_symptoms is non-empty, ground the question ONLY in those symptoms; if it is empty, ask one focused Outlook question from your own knowledge. (2) followup_required=false with a kb_id means a confident match was found — present that article and stop. (3) followup_required=false with kb_id=null means no sufficiently confident match — hand off / close. Never invent a kb_id; only ever use the kb_id this tool returned.",
+        "security": [{ "ApiKeyAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["description"],
+                "properties": {
+                  "description": {
+                    "type": "string",
+                    "description": "The user's full Outlook issue or how-to description — the original report plus every follow-up answer received so far, concatenated into one clean sentence. Do not include greetings, off-topic text, device type, or dates."
+                  },
+                  "session_id": {
+                    "type": "string",
+                    "description": "A stable conversation id. Use the SAME value for every call in one conversation so the tool can count follow-up rounds and conclude after the limit. Omit only if you cannot track a conversation id."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Routing decision plus the matched KB id (when confident) or discriminating symptoms (when a follow-up is needed).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["followup_required", "top_score"],
+                  "properties": {
+                    "followup_required": {
+                      "type": "boolean",
+                      "description": "true = ask one more question and call again; false = done (resolve or no-match)."
+                    },
+                    "kb_id": {
+                      "type": "string",
+                      "nullable": true,
+                      "description": "The matched KB article id (e.g. KB0015622) when followup_required=false and a confident match exists; null when concluded with no match. Absent while followup_required=true."
+                    },
+                    "top_score": {
+                      "type": "number",
+                      "description": "Match confidence of the top candidate on a 0..1 scale."
+                    },
+                    "discriminating_symptoms": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "description": "When followup_required=true, the symptom phrases to ground the next question in. May be an empty array, meaning no usable symptoms — ask your own focused Outlook follow-up instead."
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "A short hint about what to do next (present, ask freeform, or conclude). The structured fields above are authoritative; this is guidance."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Missing 'description' field" },
+          "401": { "description": "Invalid or missing API key (only when REQUIRE_API_KEY=true)" },
+          "500": { "description": "Server error" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      }
+    }
+  }
+}
