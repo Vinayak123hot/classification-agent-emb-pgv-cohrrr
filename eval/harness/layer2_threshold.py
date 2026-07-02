@@ -17,10 +17,7 @@ us sweep CONFIDENT_SCORE cheaply over the same scores.
 from __future__ import annotations
 
 from common import GoldSet, Metrics, Pipeline, Settings
-
-# import the live routing helpers/thresholds from the production app
-import config
-import main
+from config import CONFIG          # live routing thresholds
 
 
 class Layer2Threshold:
@@ -35,7 +32,7 @@ class Layer2Threshold:
         resolve only when the top score clears the threshold AND the top-two gap
         is not a near-tie (spread 'low')."""
         weak_absolute = top < confident
-        weak_dominance = gap < config.SPREAD_THRESHOLD
+        weak_dominance = gap < CONFIG.SPREAD_THRESHOLD
         spread_low = not (weak_absolute or weak_dominance)
         return top > confident and spread_low
 
@@ -49,7 +46,7 @@ class Layer2Threshold:
             rows.append({"case": c, "top": top, "gap": round(top - second, 4),
                          "top_kb": ordered[0]["kb_id"] if ordered else None})
 
-        C = config.CONFIDENT_SCORE
+        C = CONFIG.CONFIDENT_SCORE
         resolved = correct_resolved = false_resolved = 0
         strong_total = strong_resolved_correct = 0
         ook_total = ook_rejected = 0

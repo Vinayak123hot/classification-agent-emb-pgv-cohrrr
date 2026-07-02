@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from common import GoldSet, Metrics, Pipeline, Settings, UserSimulator
 
-import config
+from config import CONFIG
 
 
 class Layer4EndToEnd:
@@ -36,7 +36,7 @@ class Layer4EndToEnd:
         desc = case.query
         rounds = 0
         # hard stop a little beyond MAX_ROUNDS as a safety net
-        for _ in range(config.MAX_ROUNDS + 2):
+        for _ in range(CONFIG.MAX_ROUNDS + 2):
             rounds += 1
             resp = self.pipe.classify(desc, sid)
             if resp.get("followup_required") is False:

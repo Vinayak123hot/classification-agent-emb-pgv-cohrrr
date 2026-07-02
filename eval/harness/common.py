@@ -30,34 +30,24 @@ _APP = os.path.join(_REPO, "app")
 if _APP not in sys.path:
     sys.path.insert(0, _APP)
 
-import config          # app/config.py     - live thresholds/knobs
-import retrieval       # app/retrieval.py  - hybrid_search (pgvector + FTS + RRF)
-import embeddings      # app/embeddings.py - the embedding client
-import main            # app/main.py       - scoring + routing (the decision engine)
+from config import CONFIG          # app/config.py - the live Config instance
+from main import SERVICE           # app/main.py   - the composed KBService
 
 # ── Eval speed-up (correctness-preserving) ────────────────────────────────────
 # Each pipeline call makes network round-trips (Azure embedding + pgvector in
 # Central India ~ a few seconds). The layers re-run the same queries, and the
 # end-to-end loop re-sends the same description across rounds. In cosine-fallback
-# mode the pipeline is fully deterministic, so we memoize the two expensive calls
-# by their input. This changes NOTHING about the results — only the runtime.
-_embed_cache: dict = {}
-_orig_embed_query = embeddings.embed_query
-def _cached_embed_query(text):
-    if text not in _embed_cache:
-        _embed_cache[text] = _orig_embed_query(text)
-    return _embed_cache[text]
-embeddings.embed_query = _cached_embed_query
-
-_hybrid_cache: dict = {}
-_orig_hybrid = retrieval.hybrid_search
-def _cached_hybrid(query, return_k=None):
+# mode the pipeline is fully deterministic, so we memoize the retriever's search
+# (which internally does the embedding) on the live service's retriever instance.
+# This changes NOTHING about the results — only the runtime.
+_search_cache: dict = {}
+_orig_search = SERVICE.retriever.search
+def _cached_search(query, return_k=None):
     key = (query, return_k)
-    if key not in _hybrid_cache:
-        _hybrid_cache[key] = _orig_hybrid(query, return_k=return_k)
-    # return fresh copies so downstream scoring can mutate rows safely
-    return [dict(c) for c in _hybrid_cache[key]]
-retrieval.hybrid_search = _cached_hybrid
+    if key not in _search_cache:
+        _search_cache[key] = _orig_search(query, return_k=return_k)
+    return [dict(c) for c in _search_cache[key]]   # fresh copies -> safe to mutate/score
+SERVICE.retriever.search = _cached_search          # patch the instance method
 
 _EVAL_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _GOLD = os.path.join(_EVAL_DIR, "gold_set.json")
@@ -73,17 +63,17 @@ class Settings:
     def __init__(self):
         with open(_CONFIG, encoding="utf-8") as f:
             cfg = json.load(f)
-        self.k: int = int(cfg.get("k", config.RETURN_K))     # recall@K / top-K
+        self.k: int = int(cfg.get("k", CONFIG.RETURN_K))     # recall@K / top-K
         self.gates: dict = cfg.get("gates", {})
         # snapshot the live thresholds for the report header
         self.thresholds = {
-            "CONFIDENT_SCORE": config.CONFIDENT_SCORE,
-            "MIN_DISPLAY_SCORE": config.MIN_DISPLAY_SCORE,
-            "FOLLOWUP_FLOOR": config.FOLLOWUP_FLOOR,
-            "SPREAD_THRESHOLD": config.SPREAD_THRESHOLD,
-            "MIN_FIELD_SCORE": config.MIN_FIELD_SCORE,
-            "MAX_ROUNDS": config.MAX_ROUNDS,
-            "RERANK_K": config.RERANK_K,
+            "CONFIDENT_SCORE": CONFIG.CONFIDENT_SCORE,
+            "MIN_DISPLAY_SCORE": CONFIG.MIN_DISPLAY_SCORE,
+            "FOLLOWUP_FLOOR": CONFIG.FOLLOWUP_FLOOR,
+            "SPREAD_THRESHOLD": CONFIG.SPREAD_THRESHOLD,
+            "MIN_FIELD_SCORE": CONFIG.MIN_FIELD_SCORE,
+            "MAX_ROUNDS": CONFIG.MAX_ROUNDS,
+            "RERANK_K": CONFIG.RERANK_K,
         }
 
 
@@ -128,30 +118,28 @@ class GoldSet:
 
 # ══════════════════════════════════════════════════════════════════════════════
 class Pipeline:
-    """Thin wrapper over the REAL production code paths (no HTTP, no drift).
+    """Thin wrapper over the REAL production KBService (no HTTP, no drift).
 
-    - rank()     exercises retrieval + scoring (what Layer 1 needs: the full
-                 ordered candidate list).
-    - classify() calls the actual endpoint function main.get_kb_candidates so the
-                 routing decision (spread + score bands + round cap) is exactly
-                 what the deployed service returns."""
+    - rank()     -> KBService.rank() (retrieval + scoring): the full ordered list.
+    - classify() -> KBService.classify(): the exact routing decision (spread +
+                    score bands + round cap) the deployed service returns."""
+
+    def __init__(self):
+        self._service = SERVICE           # the composed, live service instance
 
     def rank(self, description: str) -> list[dict]:
         """Ordered candidates, best first. Each dict has kb_id, score, cos, ..."""
-        cands = retrieval.hybrid_search(description, return_k=config.RERANK_K)
-        cands = main._score_candidates(description, cands)   # Cohere or cosine fallback
-        return cands
+        return self._service.rank(description)
 
     def classify(self, description: str, session_id: str) -> dict:
-        """The tool's full response for one call (turn). Uses the same in-memory
-        round counter the service uses, keyed by session_id."""
-        body = main.CandidateRequest(description=description, session_id=session_id)
-        return main.get_kb_candidates(body, x_api_key="")
+        """The tool's full response for one call (turn), using the same in-memory
+        round counter, keyed by session_id."""
+        return self._service.classify(description, session_id)
 
     @staticmethod
     def reset_rounds() -> None:
         """Clear the per-session round counter between independent test cases."""
-        main._round_state.clear()
+        SERVICE.rounds.reset()
 
 
 # ══════════════════════════════════════════════════════════════════════════════

@@ -35,11 +35,13 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from common import GoldSet, Pipeline, Settings
-import config
-import followup
+from config import CONFIG                 # live Config instance
+from followup import FollowupSelector     # for the grounded-follow-up sweep
+from text_utils import NORMALIZER
 
 _EVAL_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MAX_ROUNDS = config.MAX_ROUNDS            # not a cutoff; kept fixed during tuning
+MAX_ROUNDS = CONFIG.MAX_ROUNDS            # not a cutoff; kept fixed during tuning
+SELECTOR = FollowupSelector(CONFIG, NORMALIZER)   # replicates the follow-up phrase logic
 
 # ── grids for the cutoff thresholds ───────────────────────────────────────────
 GRID_CONFIDENT = [0.45, 0.50, 0.55, 0.60, 0.65, 0.70]
@@ -160,8 +162,8 @@ def grounded_rate(data: list[dict], floor: float, field_min: float) -> dict:
         top = cd["r1"][0]["score"] if cd["r1"] else 0.0
         phrases = []
         if top >= floor:
-            phrases = followup.select_discriminating_fields(
-                cd["case"].query, cd["r1"][:config.RETURN_K], min_score=field_min)
+            phrases = SELECTOR.select(
+                cd["case"].query, cd["r1"][:CONFIG.RETURN_K], min_score=field_min)
         if phrases:
             grounded += 1
     return {"floor": floor, "field_min": field_min,
@@ -179,7 +181,7 @@ def main():
     print("done. running grid...")
 
     # baseline (current live thresholds) for comparison
-    base = evaluate(data, config.CONFIDENT_SCORE, config.MIN_DISPLAY_SCORE, config.SPREAD_THRESHOLD)
+    base = evaluate(data, CONFIG.CONFIDENT_SCORE, CONFIG.MIN_DISPLAY_SCORE, CONFIG.SPREAD_THRESHOLD)
 
     # joint grid (respect ordering FOLLOWUP_FLOOR <= MD <= C)
     combos = []
@@ -209,7 +211,7 @@ def main():
         print("  " + line(m))
     print(f"\nGrounded follow-up sweep best: floor={best_grounded['floor']} "
           f"field_min={best_grounded['field_min']} -> grounded {best_grounded['grounded_pct']}% "
-          f"(vs current floor={config.FOLLOWUP_FLOOR}/field={config.MIN_FIELD_SCORE})")
+          f"(vs current floor={CONFIG.FOLLOWUP_FLOOR}/field={CONFIG.MIN_FIELD_SCORE})")
 
     # ── write reports ───────────────────────────────────────────────────────────
     bundle = {"baseline": base, "best": best, "top": combos[:12],
@@ -223,11 +225,11 @@ def main():
     lines = ["# Hyperparameter Tuning — cutoff thresholds",
              f"\nGold `{gold.version}` · {len(gold.cases)} cases · in-memory grid over precomputed rankings.",
              "\n## Recommended settings",
-             f"- **CONFIDENT_SCORE = {best['C']}**  (was {config.CONFIDENT_SCORE})",
-             f"- **MIN_DISPLAY_SCORE = {best['MD']}**  (was {config.MIN_DISPLAY_SCORE})",
-             f"- **SPREAD_THRESHOLD = {best['ST']}**  (was {config.SPREAD_THRESHOLD})",
-             f"- **FOLLOWUP_FLOOR = {best_grounded['floor']}**  (was {config.FOLLOWUP_FLOOR}) · "
-             f"**MIN_FIELD_SCORE = {best_grounded['field_min']}**  (was {config.MIN_FIELD_SCORE})",
+             f"- **CONFIDENT_SCORE = {best['C']}**  (was {CONFIG.CONFIDENT_SCORE})",
+             f"- **MIN_DISPLAY_SCORE = {best['MD']}**  (was {CONFIG.MIN_DISPLAY_SCORE})",
+             f"- **SPREAD_THRESHOLD = {best['ST']}**  (was {CONFIG.SPREAD_THRESHOLD})",
+             f"- **FOLLOWUP_FLOOR = {best_grounded['floor']}**  (was {CONFIG.FOLLOWUP_FLOOR}) · "
+             f"**MIN_FIELD_SCORE = {best_grounded['field_min']}**  (was {CONFIG.MIN_FIELD_SCORE})",
              "\n## Baseline vs tuned (end-to-end over all cases)",
              "\n| | in-KB top-1 | out-of-KB correct | display precision | turn-1 resolves | avg rounds |",
              "|---|---|---|---|---|---|",
